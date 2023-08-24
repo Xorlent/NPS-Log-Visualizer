@@ -18,3 +18,6 @@ Parser and visualization tool for Microsoft NPS / RADIUS logs
 - Comment script / theory of op
 - Rebuild grafana dashboard
 - Add configuration XML
+
+### Reference
+- Microsoft NPS log format (https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc771748(v=ws.10))
