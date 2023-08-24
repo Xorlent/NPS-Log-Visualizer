@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<configuration>
+  <log>
+    <!-- Update/edit the values below according to your specific NPS server log settings. -->
+    <path key="path" value="C:\NPSLogs"/>
+  </log>
+  <server>
+    <!-- Update/edit the values below according to your InfluxDB server settings.  No support for authentication at this time. -->
+    <!-- If the default fqdn value remains, it assumes InfluxDB is running on the NPS server. -->
+    <fqdn key="fqdn" value="localhost"/>
+    <dbname key="dbname" value="radius"/>
+    <dbport key="dbport" value="8089"/>
+  </server>
+  <option>
+    <!-- ignoreuser: Skip logs with the specified username.  Some admins want to see RADIUS test user logs while others do not.
+          Microsoft NPS configuration guidance, including how to disable logging of the test user, can be found here:
+          https://github.com/Xorlent/Cybersec-Links/blob/main/Microsoft-NPS.md -->
+    <ignoreuser key="ignoreuser" value="svc-radius"/>
+    <newdata key="newdata" value="$true"/>
+  </option>
+</configuration>
