@@ -100,7 +100,7 @@ function parseLog($f)
     	$currentDayofMonth = Get-Date -Format "dd"
      	if($currentDayofMonth -gt $logDayofMonth[1]){
       	    & .\ParseNPSLogs.ps1
-	    exit
+	    exit 0
       	}
     }
     if ($ONLYNEWDATA -and $timestamp -le $lasttime){return}
