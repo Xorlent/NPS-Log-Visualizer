@@ -96,7 +96,7 @@ function parseLog($f)
     $timestamp = [DateTime]::ParseExact(($date + " " + $time), "MM/dd/yyyy H:m:s", $null).Ticks / 10000000 # US DT Format
     
     if ($followingLog){
-    	$logDayofMonth = $date -Split "-"
+    	$logDayofMonth = $date.Split('-')
     	$currentDayofMonth = Get-Date -Format "dd"
      	if($currentDayofMonth -gt $logDayofMonth[1]){continue :newDay} #THIS IS GOING TO CAUSE GET-CONTENT TO HANG.  HOW TO FIX.
     }
