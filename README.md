@@ -7,6 +7,11 @@ Parser and visualization tool for Microsoft NPS / RADIUS logs
 - Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
   - NSSM is recommended (https://nssm.cc/download)
   - You can accomplish similar with non-interactive scheduled tasks if desired.  
+### Execution
+- On first run, you will likely want to backfill data from logs currently in place on the NPS server.  To do this, execute:
+  ```ParseNPSLogs.ps1 $true```
+- On subsequent runs, simply execute ParseNPSLogs.ps1
+- If the parser has not run for some period of time, you can catch up by again running the backfill command.
 ### Tested
 - Log fetch
 - Parser
