@@ -235,8 +235,7 @@ function parseLog($f)
 
             sendToDB "$DBNAME,type=auth-challenge,device=$ap_radname_full,deviceip=$ap_ip,netpolicy=$policy2,special=$client_mac,special_type=mac value=`"$origin_client`",special=`"$client_mac`"" $influxtime
             }
-        default { #Write-Output "$reason\t$origin_client\t$timestamp\t$client\t$tt\t$ap_radname_full\n"
-            }
+        #default {}
     }
     saveLastTime($timestamp)
 }
@@ -247,9 +246,9 @@ function sendToDB($data,$time)
     $bytearray = $([System.Text.Encoding]::ASCII).getbytes($data)
     if ($bytearray.count -lt 996) {
     	$UDPCLIENT.Send($bytearray, $bytearray.length) | out-null
-    	Write-Host " ___________________________________________________________ "
+    	Write-Host " ____________________________________________________________ "
     	Write-Host $data
-    	Write-Host " ----------------------------------------------------------- "
+    	Write-Host " ------------------------------------------------------------ "
     }
     else{
     	Write-Host " _DATA NOT SENT__DATA NOT SENT__DATA NOT SENT__DATA NOT SENT_ "
