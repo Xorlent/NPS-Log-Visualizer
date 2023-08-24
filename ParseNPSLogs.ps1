@@ -98,7 +98,10 @@ function parseLog($f)
     if ($followingLog){
     	$logDayofMonth = $date.Split('-')
     	$currentDayofMonth = Get-Date -Format "dd"
-     	if($currentDayofMonth -gt $logDayofMonth[1]){continue :newDay} #THIS IS GOING TO CAUSE GET-CONTENT TO HANG.  HOW TO FIX.
+     	if($currentDayofMonth -gt $logDayofMonth[1]){
+      	    & .\ParseNPSLogs.ps1
+	    exit
+      	}
     }
     if ($ONLYNEWDATA -and $timestamp -le $lasttime){return}
 
