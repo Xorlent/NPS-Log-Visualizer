@@ -2,6 +2,14 @@
 Many thanks to https://github.com/geek-at for the inspiration and PHP-based code underpinning this project!
 #>
 
+<#
+BACKFILL: If $true, Load any files found within the specified NPS log path.
+     If backfill has previously run (as indicated by the presence of a .\backfilled.txt file,
+     backfill beginning on the day following the previous run.
+BACKFILL: If $false, just open today's file, fill according to the .\lasttime.txt DTS, and tail the log to catch new events.
+#>
+param([bool]$BACKFILLFLAG = $false)
+
 . .\radius_functions.ps1 # load the field translation functions
 
 <#
@@ -11,14 +19,6 @@ https://github.com/Xorlent/Cybersec-Links/blob/main/Microsoft-NPS.md
 #>
 $IGNOREUSER = 'svc-radius'
 
-<#
-BACKFILL: If $true, Load any files found within the specified NPS log path.
-     If backfill has previously run (as indicated by the presence of a .\backfilled.txt file,
-     backfill beginning on the day following the previous run.
-BACKFILL: If $false, just open today's file, fill according to the .\lasttime.txt DTS, and tail the log to catch new events.
-#>
-$BACKFILLFLAG = $false
-
 $PATH = 'C:\NPSLogs'        # Location of your NPS logs
 $DBNAME = 'radius'            # Name of the InfluxDB UDP database
 $DBSERVER = 'localhost'       # InfluxDB hostname
@@ -26,6 +26,7 @@ $DBPORT = 8089                # InfluxDB UDP port
 $ONLYNEWDATA = $true          # Push log data created since the last processed record only (keys off of lasttime.txt)
 
 $UDPCLIENT = New-Object System.Net.Sockets.UdpClient $DBSERVER, $DBPORT
+$FOLLOWINGLOG = $false
 
 if($ONLYNEWDATA)
 {
@@ -75,6 +76,7 @@ function follow()
         Write-Output "No log file $file found to process."
         return -1
     }
+    $FOLLOWINGLOG = $true
     Write-Output "...Tailing log file $file"
     Get-Content -Wait -Tail 0 -Path $file | % {parseLog}
 }
@@ -83,7 +85,6 @@ function parseLog($f)
 {
     if(!$f){
     	$f = $_
-    	$followingLog = $true
     }
     if($f.Length -lt 1){return}
     if($f.Contains($IGNOREUSER)){return}
@@ -95,12 +96,12 @@ function parseLog($f)
     #$timestamp = [DateTime]::ParseExact(($date + " " + $time), "yyyy-MM-dd H:m:s", $null).Ticks / 10000000 # European DT format
     $timestamp = [DateTime]::ParseExact(($date + " " + $time), "MM/dd/yyyy H:m:s", $null).Ticks / 10000000 # US DT Format
     
-    if ($followingLog){
-    	$logDayofMonth = $date.Split('-')
+    if ($FOLLOWINGLOG){
+    	$logDayofMonth = $date.Split('/')
     	$currentDayofMonth = Get-Date -Format "dd"
      	if($currentDayofMonth -gt $logDayofMonth[1]){
-      	    & .\ParseNPSLogs.ps1
-	    exit 0
+      	    powershell.exe -File ".\ParseNPSLogs.ps1"
+	        exit 0
       	}
     }
     if ($ONLYNEWDATA -and $timestamp -le $lasttime){return}
@@ -278,14 +279,15 @@ function sanitizeStringForInflux($string)
 }
 
 # START READING LOGS...
-if($BACKFILLFLAG)
+if($BACKFILLFLAG -eq $true)
 {
     if (Test-Path -Path .\backfilled.txt -PathType Leaf){
     	$backfillDTS = Get-Content .\backfilled.txt
         $today = Get-Date -Format 'yyMMdd'
         if($backfillDTS -eq $today){fill $false}
         else{
-            Write-Output "WARNING: Data was already backfilled on $backfillDTS.  *****TO OVERRIDE, PLEASE DELETE THE FILE .\backfilled.txt AND RE-RUN THE SCRIPT*****"
+            $readableDate = $backfillDTS.Substring(2,2) + '/' + $backfillDTS.Substring(4,2) + '/' + $backfillDTS.Substring(0,2)
+            Write-Output "WARNING: Data was already backfilled on $readableDate.  *****TO OVERRIDE, PLEASE DELETE THE FILE .\backfilled.txt AND RE-RUN THE SCRIPT*****"
             $catchup = Read-Host 'Press c to catch up since the last time you backfilled data through today OR press ENTER to load todays log'
             if($catchup.ToLower() -eq 'c'){
                 Write-Output "Catching up"
@@ -314,5 +316,7 @@ if($BACKFILLFLAG)
         Get-Date -Format 'yyMMdd' | Out-File -FilePath .\backfilled.txt
     }
 }
-:newDay else{fill $false}
+else{
+    fill $false
+    }
 follow
