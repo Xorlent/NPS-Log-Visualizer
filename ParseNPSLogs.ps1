@@ -10,18 +10,30 @@ param([bool]$BACKFILLFLAG = $false)
 
 . .\radius_functions.ps1 # load the field translation functions
 
+$ConfigFile = '.\ParseNPS-Config.xml'
+$ConfigParams = [xml](get-content $ConfigFile)
+
 <#
 IGNOREUSER: Skip logs with the specified username.  Some admins want to see RADIUS test user logs while others do not.
 Microsoft NPS configuration guidance, including how to disable logging of the test user, can be found here:
 https://github.com/Xorlent/Cybersec-Links/blob/main/Microsoft-NPS.md
 #>
-$IGNOREUSER = 'svc-radius'
 
+$IGNOREUSER = 'svc-radius'
 $PATH = 'C:\NPSLogs'        # Location of your NPS logs
 $DBNAME = 'radius'            # Name of the InfluxDB UDP database
 $DBSERVER = 'localhost'       # InfluxDB hostname
 $DBPORT = 8089                # InfluxDB UDP port
 $ONLYNEWDATA = $true          # Push log data created since the last processed record only (keys off of lasttime.txt)
+
+<#
+$PATH = $ConfigParams.configuration.log.path.value
+$DBNAME = $ConfigParams.configuration.server.dbname.value
+$DBSERVER = $ConfigParams.configuration.server.dbserver.value
+$DBPORT = $ConfigParams.configuration.server.dbport.value
+$IGNOREUSER = $ConfigParams.configuration.option.ignoreuser.value
+$ONLYNEWDATA = $ConfigParams.configuration.option.newdata.value
+#>
 
 $UDPCLIENT = New-Object System.Net.Sockets.UdpClient $DBSERVER, $DBPORT
 $FOLLOWINGLOG = $false
