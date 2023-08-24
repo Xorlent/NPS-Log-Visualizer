@@ -38,7 +38,7 @@ function saveLastTime($time)
 
 # this function is called each time the script is loaded.
 # In backfill mode, it will be called once for each log file to load.
-# In standard mode, it will be called once to only to catch up today's log file.
+# In standard mode, it will be called once only to catch up today's log file.
 function fill($backfill)
 {
     if(!$backfill) # if we're not in backfill mode, skip this
@@ -86,6 +86,8 @@ function follow()
     Get-Content -Wait -Tail 0 -Path $file | % {parseLog} # continue to listen for file changes, sending each new line to the parseLog function
 }
 
+# this function receives either pipeline input (from the follow() function), or a string (from the fill($backfill) function) passed as a parameter
+# the CSV string is parsed and reformatted according to InfluxDB, then the sendToDB($data,$time) function is called with the final payload
 function parseLog($f)
 {
     if(!$f){
@@ -257,6 +259,7 @@ function parseLog($f)
     saveLastTime($timestamp)
 }
 
+# this function takes a string of data (from parseLog($f)) and pushes the payload to the configured InfluxDB instance/database
 function sendToDB($data,$time)
 {
     $data = $data + ' ' + $time
@@ -274,6 +277,7 @@ function sendToDB($data,$time)
      }
 }
 
+# this function cleans and escapes necessary characters for InfluxDB to consume
 function sanitizeStringForInflux($string)
 {
     $StringRet = $string.trim()
