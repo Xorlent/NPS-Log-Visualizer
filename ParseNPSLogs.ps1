@@ -28,11 +28,11 @@ $ONLYNEWDATA = $true          # Push log data created since the last processed r
 
 <#
 $PATH = $ConfigParams.configuration.log.path.value
+$DBSERVER = $ConfigParams.configuration.server.fqdn.value
 $DBNAME = $ConfigParams.configuration.server.dbname.value
-$DBSERVER = $ConfigParams.configuration.server.dbserver.value
 $DBPORT = $ConfigParams.configuration.server.dbport.value
 $IGNOREUSER = $ConfigParams.configuration.option.ignoreuser.value
-$ONLYNEWDATA = $ConfigParams.configuration.option.newdata.value
+$ONLYNEWDATA = $ConfigParams.configuration.option.newdata.value # IS THIS REALLY NEEDED?????
 #>
 
 $UDPCLIENT = New-Object System.Net.Sockets.UdpClient $DBSERVER, $DBPORT
