@@ -13,36 +13,17 @@ param([bool]$BACKFILLFLAG = $false)
 $ConfigFile = '.\ParseNPS-Config.xml'
 $ConfigParams = [xml](get-content $ConfigFile)
 
-<#
-IGNOREUSER: Skip logs with the specified username.  Some admins want to see RADIUS test user logs while others do not.
-Microsoft NPS configuration guidance, including how to disable logging of the test user, can be found here:
-https://github.com/Xorlent/Cybersec-Links/blob/main/Microsoft-NPS.md
-#>
-
-$IGNOREUSER = 'svc-radius'
-$PATH = 'C:\NPSLogs'        # Location of your NPS logs
-$DBNAME = 'radius'            # Name of the InfluxDB UDP database
-$DBSERVER = 'localhost'       # InfluxDB hostname
-$DBPORT = 8089                # InfluxDB UDP port
-$ONLYNEWDATA = $true          # Push log data created since the last processed record only (keys off of lasttime.txt)
-
-<#
 $PATH = $ConfigParams.configuration.log.path.value
 $DBSERVER = $ConfigParams.configuration.server.fqdn.value
 $DBNAME = $ConfigParams.configuration.server.dbname.value
 $DBPORT = $ConfigParams.configuration.server.dbport.value
 $IGNOREUSER = $ConfigParams.configuration.option.ignoreuser.value
-$ONLYNEWDATA = $ConfigParams.configuration.option.newdata.value # IS THIS REALLY NEEDED?????
-#>
 
 $UDPCLIENT = New-Object System.Net.Sockets.UdpClient $DBSERVER, $DBPORT
 $FOLLOWINGLOG = $false
 
-if($ONLYNEWDATA)
-{
-    if (Test-Path -Path .\lasttime.txt -PathType Leaf){$lasttime = Get-Content .\lasttime.txt -Raw}
-    else {$lasttime = 0}
-}
+if (Test-Path -Path .\lasttime.txt -PathType Leaf){$lasttime = Get-Content .\lasttime.txt -Raw}
+else {$lasttime = 0}
 
 function saveLastTime($time)
 {
@@ -114,7 +95,7 @@ function parseLog($f)
 	        exit 0
       	}
     }
-    if ($ONLYNEWDATA -and $timestamp -le $lasttime){return}
+    if ($timestamp -le $lasttime){return}
 
     $logDTS = Get-Date ($date + " " + $time) -Format 'MM/dd/yyyy HH:mm:ss'
     $server = $g[0].Replace('"', '')
