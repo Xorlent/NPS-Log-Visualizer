@@ -68,7 +68,7 @@ function fill($backfill)
 
 function follow()
 {
-	$datestring = (Get-Date).ToString("yyMMdd")
+    $datestring = (Get-Date).ToString("yyMMdd")
     $file = $PATH + '\IN' + $datestring + '.log'
 
     if (-not(Test-Path -Path $file -PathType Leaf)) {
@@ -268,8 +268,7 @@ function sanitizeStringForInflux($string)
 }
 
 # START READING LOGS...
-if(!$BACKFILLFLAG){fill $false}
-else 
+if($BACKFILLFLAG)
 {
     if (Test-Path -Path .\backfilled.txt -PathType Leaf){
     	$backfillDTS = Get-Content .\backfilled.txt
@@ -305,4 +304,5 @@ else
         Get-Date -Format 'yyMMdd' | Out-File -FilePath .\backfilled.txt
     }
 }
+:newDay else{fill $false}
 follow
