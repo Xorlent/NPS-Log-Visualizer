@@ -1,6 +1,4 @@
-﻿<#
-Many thanks to https://github.com/geek-at for the inspiration and PHP-based code underpinning this project!
-#>
+# Many thanks to https://github.com/geek-at for the inspiration and PHP code used to develop this project!
 
 <#
 BACKFILL: If $true, Load any files found within the specified NPS log path.
