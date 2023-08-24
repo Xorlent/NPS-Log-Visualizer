@@ -81,7 +81,10 @@ function follow()
 
 function parseLog($f)
 {
-    if(!$f){$f = $_}
+    if(!$f){
+    	$f = $_
+    	$followingLog = $true
+    }
     if($f.Length -lt 1){return}
     if($f.Contains($IGNOREUSER)){return}
     $f = $f.Trim()
@@ -91,7 +94,12 @@ function parseLog($f)
 
     #$timestamp = [DateTime]::ParseExact(($date + " " + $time), "yyyy-MM-dd H:m:s", $null).Ticks / 10000000 # European DT format
     $timestamp = [DateTime]::ParseExact(($date + " " + $time), "MM/dd/yyyy H:m:s", $null).Ticks / 10000000 # US DT Format
-
+    
+    if ($followingLog){
+    	$logDayofMonth = $date -Split "-"
+    	$currentDayofMonth = Get-Date -Format "dd"
+     	if($currentDayofMonth -gt $logDayofMonth[1]){continue :newDay} #THIS IS GOING TO CAUSE GET-CONTENT TO HANG.  HOW TO FIX.
+    }
     if ($ONLYNEWDATA -and $timestamp -le $lasttime){return}
 
     $logDTS = Get-Date ($date + " " + $time) -Format 'MM/dd/yyyy HH:mm:ss'
