@@ -11,65 +11,79 @@ param([bool]$BACKFILLFLAG = $false)
 . .\radius_functions.ps1 # load the field translation functions
 
 $ConfigFile = '.\ParseNPS-Config.xml'
-$ConfigParams = [xml](get-content $ConfigFile)
+$ConfigParams = [xml](get-content $ConfigFile) # load the configuraton file
 
+# load the configuration values into script variables
 $PATH = $ConfigParams.configuration.log.path.value
 $DBSERVER = $ConfigParams.configuration.server.fqdn.value
 $DBNAME = $ConfigParams.configuration.server.dbname.value
 $DBPORT = $ConfigParams.configuration.server.dbport.value
 $IGNOREUSER = $ConfigParams.configuration.option.ignoreuser.value
 
+# initialize the UDP socket writer
 $UDPCLIENT = New-Object System.Net.Sockets.UdpClient $DBSERVER, $DBPORT
+
+# flag used to track whether we're in follow mode or fill/backfill mode
 $FOLLOWINGLOG = $false
 
+# load the timestamp for the last loaded log entry so we can be sure we don't double-load events
 if (Test-Path -Path .\lasttime.txt -PathType Leaf){$lasttime = Get-Content .\lasttime.txt -Raw}
-else {$lasttime = 0}
+else {$lasttime = 0} # if there is no timestamp file, just initialize the timestamp to 0
 
+# this function simply writes the passed value to .\lasttime.txt.  The file tracks the last loaded log entry.
 function saveLastTime($time)
 {
     $time | Out-File -FilePath .\lasttime.txt
 }
 
+# this function is called each time the script is loaded.
+# In backfill mode, it will be called once for each log file to load.
+# In standard mode, it will be called once to only to catch up today's log file.
 function fill($backfill)
 {
-    if(!$backfill)
+    if(!$backfill) # if we're not in backfill mode, skip this
     {
 	$datestring = (Get-Date).ToString("yyMMdd")
         $file = $PATH + '\IN' + $datestring + '.log'
     }
-    else 
+    else # if we're in backfill mode, use the file name passed in as an argument
     {
         $file = $backfill
     }
 
+    # if we don't find the log file, bail out.
     if (-not(Test-Path -Path $file -PathType Leaf)) {
         Write-Output "No log file $file found to process."
         return -1
     }
     Write-Output "...Processing $file..."
 
-    $fileHandle = [System.IO.File]::OpenText($file)
+    $fileHandle = [System.IO.File]::OpenText($file) # get the file handle
 
-    :nextLine while ($d = $fileHandle.ReadLine())
+    :nextLine while ($d = $fileHandle.ReadLine()) # read each line of the log file
     {
-        parseLog $d
+        parseLog $d # call the parser to push any valid logs to InfluxDB
     }
+    # finished reading file.  Close handle.
     $fileHandle.Close()
     $fileHandle.Dispose()
 }
 
+# this function is called only once we're caught up and now need to operate in tail mode.
 function follow()
 {
+    # build the file name variable for today's log file
     $datestring = (Get-Date).ToString("yyMMdd")
     $file = $PATH + '\IN' + $datestring + '.log'
 
+    # if we don't find the log file, bail out.
     if (-not(Test-Path -Path $file -PathType Leaf)) {
         Write-Output "No log file $file found to process."
         return -1
     }
-    $FOLLOWINGLOG = $true
+    $FOLLOWINGLOG = $true # indicate that we're now in log follow mode
     Write-Output "...Tailing log file $file"
-    Get-Content -Wait -Tail 0 -Path $file | % {parseLog}
+    Get-Content -Wait -Tail 0 -Path $file | % {parseLog} # continue to listen for file changes, sending each new line to the parseLog function
 }
 
 function parseLog($f)
