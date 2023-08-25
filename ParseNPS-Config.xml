@@ -17,6 +17,5 @@
           Microsoft NPS configuration guidance, including how to disable logging of the test user, can be found here:
           https://github.com/Xorlent/Cybersec-Links/blob/main/Microsoft-NPS.md -->
     <ignoreuser key="ignoreuser" value="svc-radius"/>
-    <newdata key="newdata" value="$true"/>
   </option>
 </configuration>
