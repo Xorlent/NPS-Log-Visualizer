@@ -2,11 +2,12 @@
 <configuration>
   <log>
     <!-- Update/edit the values below according to your specific NPS server log settings. -->
+    <!-- Make sure NPS is configured to output daily logs in ODBC format. -->
     <path key="path" value="C:\NPSLogs"/>
   </log>
   <server>
     <!-- Update/edit the values below according to your InfluxDB server settings.  No support for authentication at this time. -->
-    <!-- If the default fqdn value remains, it assumes InfluxDB is running on the NPS server. -->
+    <!-- If the default fqdn value remains, it assumes InfluxDB is running on the NPS server where the script is being run. -->
     <fqdn key="fqdn" value="localhost"/>
     <dbname key="dbname" value="radius"/>
     <dbport key="dbport" value="8089"/>
