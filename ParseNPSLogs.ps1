@@ -90,11 +90,11 @@ function follow()
 # the CSV string is parsed and reformatted according to InfluxDB, then the sendToDB($data,$time) function is called with the final payload
 function parseLog($f)
 {
-    if(!$f){
+    if(!$f){ # if our input was received from the pipeline, assign the value to $f
     	$f = $_
     }
-    if($f.Length -lt 1){return}
-    if($f.Contains($IGNOREUSER)){return}
+    if($f.Length -lt 1){return} # this is an empty line.  Return.
+    if($f.Contains($IGNOREUSER)){return} # this line contains our ignoreuser string.  Return.
     $f = $f.Trim()
     $g = $f.Split(',')
     $date = $g[2].Replace('"', '')
@@ -103,15 +103,15 @@ function parseLog($f)
     #$timestamp = [DateTime]::ParseExact(($date + " " + $time), "yyyy-MM-dd H:m:s", $null).Ticks / 10000000 # European DT format
     $timestamp = [DateTime]::ParseExact(($date + " " + $time), "MM/dd/yyyy H:m:s", $null).Ticks / 10000000 # US DT Format
     
-    if ($FOLLOWINGLOG){
+    if ($FOLLOWINGLOG){ # if we're in follow (Get-Content -tail) mode, check to make sure the day has not changed on us
     	$logDayofMonth = $date.Split('/')
     	$currentDayofMonth = Get-Date -Format "dd"
-     	if($currentDayofMonth -gt $logDayofMonth[1]){
+     	if($currentDayofMonth -gt $logDayofMonth[1]){ # if the day changed, we need to open a new log file.  Reload the script and quit execution.
       	    powershell.exe -File ".\ParseNPSLogs.ps1"
 	        exit 0
       	}
     }
-    if ($timestamp -le $lasttime){return}
+    if ($timestamp -le $lasttime){return} # if we've already processed a log with this date/time, return.
 
     $logDTS = Get-Date ($date + " " + $time) -Format 'MM/dd/yyyy HH:mm:ss'
     $server = $g[0].Replace('"', '')
@@ -184,7 +184,7 @@ function parseLog($f)
 
     $origin_client = SanitizeStringForInflux($origin_client)
 
-    switch($type)
+    switch($type) # check to see what type of log this is so we know what fields are important to send to the database
     {
         1 { #Requesting access
                     
@@ -219,7 +219,7 @@ function parseLog($f)
             sendToDB "$DBNAME,type=auth-rejected,device=$ap_radname_full,deviceip=$ap_ip,special=$reason,special_type=reason value=`"$origin_client`",special_val=`"$rs`"" $influxtime
             }
 
-        4 { #Accounting-Request
+        4 { #Accounting-Request - In sample logs we observed a large number of events of no value, so we filter out anything lacking details about a client (name, or user, or MAC)
 
             #making sure all tag values are set and if not, set them to "0"
             $ap_radname_full = if ($ap_radname_full) { $ap_radname_full } else { '0' }
@@ -325,7 +325,8 @@ if($BACKFILLFLAG -eq $true)
         Get-Date -Format 'yyMMdd' | Out-File -FilePath .\backfilled.txt
     }
 }
-else{
+else{ # script was called with no parameters, simply parse today's log and then follow/tail to capture any new events.
     fill $false
     }
+# once any backfill work is complete, just call follow to continually watch today's log file
 follow
