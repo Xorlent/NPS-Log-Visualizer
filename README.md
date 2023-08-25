@@ -21,7 +21,6 @@ Parser and visualization tool for Microsoft NPS / RADIUS logs
 - Grafana dashboard alpha
 - XML configuration file
 ### To-do
-- Comment script / theory of op
 - Rebuild grafana dashboard
 
 ### Reference
