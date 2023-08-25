@@ -8,7 +8,14 @@ BACKFILL: If $false, just open today's file, fill according to the .\lasttime.tx
 #>
 param([bool]$BACKFILLFLAG = $false)
 
-. .\radius_functions.ps1 # load the field translation functions
+Try {. .\radius_functions.ps1} # load the field translation functions
+Catch {
+    Write-Console 'Failed to load required translation functions from radius_functions.ps1'
+    Write-Console 'It is possible you need to change your PowerShell execution policy.  See https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.security/set-executionpolicy?view=powershell-7.3'
+    Write-Console 'Example execution policy command:'
+    Write-Console 'Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser'
+    exit 3
+    }
 
 $ConfigFile = '.\ParseNPS-Config.xml'
 $ConfigParams = [xml](get-content $ConfigFile) # load the configuraton file
