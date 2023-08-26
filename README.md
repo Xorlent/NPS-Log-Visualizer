@@ -9,8 +9,8 @@
     - Copy the starter configuration file from this repo into the folder, overwriting the existing file  
     - Start InfluxDB: ```influxd.exe -config .\influxdb.conf```  
 5. Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
-  - Once installed, start Grafana and load [http://localhost:3000](http://localhost:3000)
-- Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
+    - Once installed, start Grafana and load [http://localhost:3000](http://localhost:3000)
+NOTE: Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
   - NSSM is recommended (https://nssm.cc/download)
   - You can accomplish similar with non-interactive scheduled tasks if desired.  
 ### Execution
