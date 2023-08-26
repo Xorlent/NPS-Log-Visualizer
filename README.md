@@ -1,11 +1,14 @@
 # NPS-Log-Visualizer
 ## Parser and visualization tool for Microsoft NPS / RADIUS logs  
 ### Installation
-- Requires InfluxDB 1.8 (https://dl.influxdata.com/influxdb/releases/influxdb-1.8.10_windows_amd64.zip)  
+1. Download the latest release .ZIP file.
+2. Right-click the downloaded file, click Properties, and click "Unblock"
+3. Extract the .ZIP to a single directory.
+4. Get InfluxDB 1.8 (https://dl.influxdata.com/influxdb/releases/influxdb-1.8.10_windows_amd64.zip)  
   - Unpack the files, place them into an appropriate folder within the Program Files directory  
   - Copy the starter configuration file from this repo into the folder, overwriting the existing file  
   - Start InfluxDB: ```influxd.exe -config .\influxdb.conf```  
-- Requires Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
+    Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
   - Once installed, start Grafana and load [http://localhost:3000](http://localhost:3000)
 - Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
   - NSSM is recommended (https://nssm.cc/download)
