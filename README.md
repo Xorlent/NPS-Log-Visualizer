@@ -16,7 +16,8 @@ NOTE: Because neither InfluxDB or Grafana implements "ServiceMain" in their comp
   - You can accomplish similar with non-interactive scheduled tasks if desired.  
 ### Execution
 - On first run, you will likely want to backfill data from logs currently in place on the NPS server.
-  - To do this, execute: ```ParseNPSLogs.ps1 $true```  
+  - To do this, execute: ```ParseNPSLogs.ps1 $true```
+  - Expect execution to take about 1 second for every 10MB of logfile.  If you cancel before the process has completed, it will not save the backfill state.
 - On subsequent runs, simply execute ParseNPSLogs.ps1  
 - If the parser has not run for some period of time, you can catch up by again running the backfill command.  
 ### Reference
