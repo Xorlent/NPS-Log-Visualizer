@@ -11,16 +11,5 @@
   - To do this, execute: ```ParseNPSLogs.ps1 $true```  
 - On subsequent runs, simply execute ParseNPSLogs.ps1  
 - If the parser has not run for some period of time, you can catch up by again running the backfill command.  
-### Tested
-- Log fetch
-- Parser
-- Backfill
-- Payload generation
-- UDP record submission to InfluxDB
-- Grafana dashboard alpha (minimally functional)
-- XML configuration file
-### To-do
-- Rebuild grafana dashboard
-
 ### Reference
 - Microsoft NPS log format (https://learn.microsoft.com/en-us/previous-versions/windows/it-pro/windows-server-2008-r2-and-2008/cc771748(v=ws.10))
