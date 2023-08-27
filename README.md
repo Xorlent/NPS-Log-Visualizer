@@ -11,7 +11,7 @@
 5. Get InfluxDB 1.8 (https://dl.influxdata.com/influxdb/releases/influxdb-1.8.10_windows_amd64.zip)  
     - Unpack the files, place them into an appropriate folder within the Program Files directory.  
     - Copy the starter configuration file from this repo into the folder, overwriting the existing file.  
-    - Start InfluxDB: ```influxd.exe -config .\influxdb.conf```  
+    - Start InfluxDB from its install location: ```influxd.exe -config .\influxdb.conf```  
 6. Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)  
     - Once installed, start Grafana and load [http://localhost:3000/connections/datasources/new](http://localhost:3000/connections/datasources/new)  
     - Select "InfluxDB"  
@@ -32,6 +32,7 @@ NOTE: Because neither InfluxDB or Grafana implements "ServiceMain" in their comp
   - Expect execution to take about 1 second for every 10MB of logfile.  If you cancel before the process has completed, it will not save the backfill state.  
 - On subsequent runs, simply execute ParseNPSLogs.ps1  
 - If the parser has not run for some period of time, you can catch up by again running the backfill command.  
+- Once data has been sent to InfluxDB, open the [imported dashboard](http://localhost:3000/dashboards) to see the results.  
 ### Script details
 #### ParseNPSLogs.ps1
 This is the main program script.  The tool can process about 10MB of log data per second, so plan accordingly if you will be backfilling a large amount of data.  
