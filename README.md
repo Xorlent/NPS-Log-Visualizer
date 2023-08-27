@@ -11,7 +11,8 @@
 5. Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
     - Once installed, start Grafana and load [http://localhost:3000/connections/datasources/new](http://localhost:3000/connections/datasources/new)
     - Select "InfluxDB"  
-    - Configure all details as shown [here](https://github.com/Xorlent/NPS-Log-Visualizer/blob/main/InfluxDataSource.jpg)  
+    - Configure all details as shown [here](https://github.com/Xorlent/NPS-Log-Visualizer/blob/main/InfluxDataSource.jpg)
+        - The admin password is left blank for a default installation  
 
 NOTE: Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
   - NSSM is recommended (https://nssm.cc/download)
