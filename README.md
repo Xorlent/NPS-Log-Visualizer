@@ -18,6 +18,15 @@
 NOTE: Because neither InfluxDB or Grafana implements "ServiceMain" in their compiled code, you need to use a wrapper to create a Windows service.  
   - NSSM is recommended (https://nssm.cc/download)
   - You can accomplish similar with non-interactive scheduled tasks if desired.  
+### Configuration
+#### ParseNPS-Config.xml
+- Edit this file to specify your NPS log location, InfluxDB details (if different than the example config provided in this project).  
+- If you have a RADIUS test user, specify that username in the "ignoreuser" field.  
+### Two files control the execution of the NPS-to-Syslog script
+#### ParseNPSLogs.ps1
+This is the main program script.  The tool can process about 10MB of log data per second, so plan accordingly if you will be backfilling a large amount of data.  
+#### radius_functions.ps1
+This file contains lookup functions for various log status fields, converting from numbers to human-readable text  
 ### Execution
 - On first run, you will likely want to backfill data from logs currently in place on the NPS server.
   - To do this, execute: ```ParseNPSLogs.ps1 $true```
