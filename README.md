@@ -1,14 +1,18 @@
 # NPS-Log-Visualizer
 ## Parser and visualization tool for Microsoft NPS / RADIUS logs  
 ### Installation
+#### This procedure assumes everything will be installed on the Microsoft NPS server
 1. Download the latest release .ZIP file.
 2. Right-click the downloaded file, click Properties, and click "Unblock."
 3. Extract the .ZIP to a single directory.
-4. Get InfluxDB 1.8 (https://dl.influxdata.com/influxdb/releases/influxdb-1.8.10_windows_amd64.zip)  
+4. Open the NNetwork Policy Server management console and configure "Accounting" options.
+    - Configure daily logs in the ODBC format.
+    - Restart the NPS service.
+5. Get InfluxDB 1.8 (https://dl.influxdata.com/influxdb/releases/influxdb-1.8.10_windows_amd64.zip)  
     - Unpack the files, place them into an appropriate folder within the Program Files directory.  
     - Copy the starter configuration file from this repo into the folder, overwriting the existing file.  
     - Start InfluxDB: ```influxd.exe -config .\influxdb.conf```  
-5. Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
+6. Get Grafana (https://grafana.com/grafana/download/10.0.3?edition=oss&pg=oss-graf&plcmt=hero-btn-1&platform=windows)
     - Once installed, start Grafana and load [http://localhost:3000/connections/datasources/new](http://localhost:3000/connections/datasources/new)
     - Select "InfluxDB"  
     - Configure all details as shown [here](https://github.com/Xorlent/NPS-Log-Visualizer/blob/main/InfluxDataSource.jpg)
